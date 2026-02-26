@@ -38,6 +38,42 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 - **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
 - **[64 Robots](https://64robots.com)**
 - **[Curotec](https://www.curotec.com/services/technologies/laravel)**
+
+---
+
+## Project Setup & Custom Features
+
+This repository contains a custom implementation fulfilling a multi-part assignment including admin/user/product management and more.
+
+**Setup Instructions**
+1. Copy `.env.example` to `.env` and configure database + mail.
+2. Run `composer install`.
+3. Create storage link: `php artisan storage:link`.
+4. Run migrations/seeds:
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
+5. Optional packages:
+   ```bash
+   composer require barryvdh/laravel-dompdf phpoffice/phpspreadsheet
+   ```
+6. Start server: `php artisan serve`.
+
+**Key Features**
+
+- Role-based authentication (admin/user/guest) with email verification.
+- Admin CRUD for accounts, products (single/multiple photos, import/restore), reviews, transactions.
+- Product/service listing with search/filter and chart endpoints.
+- User profile with photo upload, status control.
+- Review system limited to purchasers.
+- Transaction emails with PDF receipt attachments.
+
+**Testing**
+
+Run `php artisan test` to execute included feature tests.
+
+Please refer to the code for examples of validation, middleware, and MVC patterns used throughout.
 - **[DevSquad](https://devsquad.com/hire-laravel-developers)**
 - **[Redberry](https://redberry.international/laravel-development)**
 - **[Active Logic](https://activelogic.com)**

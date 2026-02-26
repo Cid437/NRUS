@@ -6,6 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int|null $category_id
+ * @property int|null $brand_id
+ * @property string $name
+ * @property string $slug
+ * @property string|null $description
+ * @property float $price
+ * @property int $stock
+ * @property bool $is_active
+ * @property \Carbon\CarbonImmutable|null $deleted_at
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
+ */
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
@@ -32,5 +46,10 @@ class Product extends Model
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function scopeSearch($query, $term)
+    {
+        return $query->where('name', 'like', '%'.$term.'%');
     }
 }
