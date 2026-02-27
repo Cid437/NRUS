@@ -27,7 +27,14 @@ class UserController extends Controller
             'email' => 'required|email|max:255|unique:users,email,'.$user->id,
             'role' => 'required|in:admin,user,guest',
             'is_active' => 'boolean',
+            'password' => 'nullable|string|min:6', // password is optional
         ]);
+
+        // Only update password if admin entered one
+         if ($request->filled('password')) {
+        $user->password = $request->password; // Laravel automatically hashes if $casts['password'] = 'hashed'
+        }
+
         $user->update($data);
         return redirect()->route('admin.users.index')->with('status','User updated');
     }

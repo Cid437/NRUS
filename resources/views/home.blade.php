@@ -11,5 +11,8 @@
         <button type="submit">Logout</button>
     </form>
 @endif
+
+<a href="{{ route('admin.dashboard') }}">Admin?</a>
+
 </body>
 </html>

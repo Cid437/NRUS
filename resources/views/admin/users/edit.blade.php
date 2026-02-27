@@ -9,7 +9,8 @@
     @method('PUT')
     <label>Name:</label><input type="text" name="name" value="{{ old('name',$user->name) }}"><br>
     <label>Email:</label><input type="email" name="email" value="{{ old('email',$user->email) }}"><br>
-    <label>Role:</label>
+    <label>Password (leave blank to keep current):</label>
+    <input type="password" name="password"><br>
     <select name="role">
         <option value="admin" {{ $user->role=='admin'?'selected':'' }}>Admin</option>
         <option value="user" {{ $user->role=='user'?'selected':'' }}>User</option>
