@@ -4,6 +4,7 @@
     <title>Login</title>
 </head>
 <body>
+@include('components.navbar')
 <h1>Login</h1>
 @if($errors->any())
     <div style="color:red;">

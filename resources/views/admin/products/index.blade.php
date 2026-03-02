@@ -2,6 +2,7 @@
 <html>
 <head><title>Products</title></head>
 <body>
+@include('components.navbar')
 <h1>Products</h1>
 @if(session('status'))<p style="color:green">{{ session('status') }}</p>@endif
 <a href="{{ route('admin.products.create') }}">Create new</a> |

@@ -30,12 +30,7 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="#">🛒 NRUS Shop</a>
-    </div>
-</nav>
+@include('components.navbar')
 
 <div class="container mt-5">
 

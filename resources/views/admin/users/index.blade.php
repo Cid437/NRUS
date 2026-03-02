@@ -2,6 +2,7 @@
 <html>
 <head><title>Users</title></head>
 <body>
+@include('components.navbar')
 <h1>Users</h1>
 @if(session('status'))<p style="color:green">{{ session('status') }}</p>@endif
 <table border="1">

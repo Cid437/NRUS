@@ -2,6 +2,7 @@
 <html>
 <head><title>Edit User</title></head>
 <body>
+@include('components.navbar')
 <h1>Edit User</h1>
 @if($errors->any())<div style="color:red"><ul>@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>@endif
 <form method="POST" action="{{ route('admin.users.update',$user) }}">

@@ -4,6 +4,7 @@
     <title>Register</title>
 </head>
 <body>
+@include('components.navbar')
 <h1>Register</h1>
 @if($errors->any())
     <div style="color:red;">

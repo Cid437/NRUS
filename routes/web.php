@@ -27,7 +27,7 @@ Route::post('email/resend', [VerificationController::class,'resend'])
 // example protected home
 Route::get('/home', function () {
     return view('home');
-})->middleware(['auth','verified']);
+})->middleware(['auth','verified'])->name('home');
 
 // chart endpoints
 Route::get('charts/yearly', [\App\Http\Controllers\ChartController::class,'yearlySales']);
