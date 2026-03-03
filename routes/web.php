@@ -7,7 +7,9 @@ use App\Http\Controllers\Auth\VerificationController;
 
 Route::get('/', [\App\Http\Controllers\ShopController::class,'index'])->name('shop.index');
 
-
+Route::get('/products', [\App\Http\Controllers\ShopController::class, 'index']); // Uses your existing shop page
+Route::view('/about', 'about');
+Route::view('/contact', 'contact'); 
 // Authentication
 Route::get('register', [RegisterController::class,'showRegistrationForm'])->name('register');
 Route::post('register', [RegisterController::class,'register']);

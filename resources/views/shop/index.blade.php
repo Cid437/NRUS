@@ -5,7 +5,6 @@
     <title>NRUS Shop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
@@ -34,9 +33,21 @@
 
 <div class="container mt-5">
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <h2 class="mb-4 text-center">Products</h2>
 
-    <!-- SEARCH & FILTER -->
     <form method="GET" class="row mb-4">
         <div class="col-md-3">
             <input type="text" name="search" class="form-control" placeholder="Search">
@@ -58,7 +69,6 @@
         </div>
     </form>
 
-    <!-- PRODUCT GRID -->
     <div class="row">
         @foreach($products as $product)
             <div class="col-md-4 mb-4">
@@ -68,19 +78,27 @@
                         <p class="price">${{ number_format($product->price, 2) }}</p>
                     </div>
                     <div class="card-footer bg-white border-0">
-                        <button class="btn btn-success w-100">Add to Cart</button>
+                        @auth
+                            <form action="{{ route('transactions.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <button type="submit" class="btn btn-success w-100">Add to Cart</button>
+                            </form>
+                        @else
+                            <button type="button" onclick="alert('Please log in first.')" class="btn btn-success w-100">Add to Cart</button>
+                        @endauth
                     </div>
                 </div>
             </div>
         @endforeach
     </div>
 
-    <!-- PAGINATION -->
     <div class="mt-4 d-flex justify-content-center">
         {{ $products->links() }}
     </div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
