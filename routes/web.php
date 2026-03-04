@@ -58,7 +58,7 @@ Route::middleware(['auth','verified'])->group(function(){
 Route::middleware(['auth','verified','admin'])->prefix('admin')->name('admin.')->group(function() {
     Route::get('/', function(){ return view('admin.dashboard'); })->name('dashboard');
     // user management
-    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create','store','show']);
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except([]);
 
     // product management
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);

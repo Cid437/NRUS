@@ -5,6 +5,11 @@
 @include('components.navbar')
 <h1>Users</h1>
 @if(session('status'))<p style="color:green">{{ session('status') }}</p>@endif
+
+<div style="margin-bottom: 1.5rem;">
+    <a href="{{ route('admin.users.create') }}" style="background-color: #4CAF50; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px; display: inline-block;">+ Create User</a>
+</div>
+
 <table border="1">
     <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th>Actions</th></tr>
     @foreach($users as $user)

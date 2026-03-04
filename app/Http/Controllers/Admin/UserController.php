@@ -44,4 +44,25 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('admin.users.index')->with('status','User deleted');
     }
+
+    public function create()
+    {
+        return view('admin.users.create');
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users',
+            'role' => 'required|in:admin,user,guest',
+            'is_active' => 'boolean',
+            'password' => 'required|string|min:6|confirmed', // password is required and must be confirmed
+        ]);
+
+        $data['password'] = Hash::make($data['password']); // hash the password
+
+        User::create($data);
+        return redirect()->route('admin.users.index')->with('status','User created');
+    }
 }
