@@ -31,13 +31,39 @@
         @auth
 
             <!-- Admin Links -->
-            @if(auth()->user()->role === 'admin')
+           @if(auth()->user()->role === 'admin')
 
-                <li><a href="{{ route('admin.dashboard') }}" style="text-decoration: none; color: #ffffff;">Dashboard</a></li>
-                <li><a href="{{ route('admin.products.index') }}" style="text-decoration: none; color: #ffffff;">Products</a></li>
-                <li><a href="{{ route('admin.users.index') }}" style="text-decoration: none; color: #ffffff;">Users</a></li>
-                <li><a href="{{ route('admin.reviews.index') }}" style="text-decoration: none; color: #ffffff;">Reviews</a></li>
-                <li><a href="{{ route('admin.transactions.index') }}" style="text-decoration: none; color: #ffffff;">Transactions</a></li>
+<li x-data="{ open: false }" style="position: relative;">
+
+    <button 
+        @click="open = !open"
+        style="background:none;border:none;color:white;cursor:pointer;">
+        Admin ▾
+    </button>
+
+    <ul 
+        x-show="open"
+        x-transition
+        @click.outside="open = false"
+        x-cloak
+        style="
+            position:absolute;
+            top:30px;
+            background:#2b2b2b;
+            list-style:none;
+            padding:10px;
+            width:180px;
+        ">
+
+        <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ route('admin.products.index') }}">Products</a></li>
+        <li><a href="{{ route('admin.users.index') }}">Users</a></li>
+        <li><a href="{{ route('admin.reviews.index') }}">Reviews</a></li>
+        <li><a href="{{ route('admin.transactions.index') }}">Transactions</a></li>
+
+    </ul>
+
+</li>
 
             @else
 
