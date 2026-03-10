@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head><title>Reviews</title></head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    @stack('styles')
 <body>
-@include('components.navbar')
 <h1>All Reviews</h1>
 @if(session('status'))<p style="color:green">{{ session('status') }}</p>@endif
 <table border="1">

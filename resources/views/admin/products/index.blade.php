@@ -1,42 +1,66 @@
-<!DOCTYPE html>
-<html>
-<head><title>Products</title></head>
-<body>
-@include('components.navbar')
-<h1>Products</h1>
-@if(session('status'))<p style="color:green">{{ session('status') }}</p>@endif
-<a href="{{ route('admin.products.create') }}">Create new</a> |
-<a href="{{ route('admin.products.trashed') }}">View trashed</a>
-<form method="GET" style="margin-top:10px;">
-    <input type="text" name="search" placeholder="Search" value="{{ request('search') }}">
-    <button type="submit">Go</button>
-</form>
-<table border="1">
-    <tr><th>ID</th><th>Name</th><th>Photo</th><th>Price</th><th>Actions</th></tr>
-    @foreach($products as $p)
-    <tr>
-        <td>{{ $p->id }}</td>
-        <td>{{ $p->name }}</td>
-        <td>@if($p->photos->first())<img src="{{ asset('storage/'.$p->photos->first()->file) }}" width="50">@endif</td>
-        <td>{{ $p->price }}</td>
-        <td>
-            <a href="{{ route('admin.products.edit',$p) }}">Edit</a>
-            <form method="POST" action="{{ route('admin.products.destroy',$p) }}" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" onclick="return confirm('Delete?')">Delete</button>
-            </form>
-        </td>
-    </tr>
-    @endforeach
-</table>
-{{ $products->links() }}
+@extends('layouts.app')
 
-<h3>Import CSV</h3>
-<form method="POST" action="{{ route('admin.products.import') }}" enctype="multipart/form-data">
-    @csrf
-    <input type="file" name="file" accept=".csv">
-    <button type="submit">Upload</button>
-</form>
-</body>
-</html>
+@section('title', 'Products')
+
+@section('content')
+<div class="container mt-5">
+    <h1>Products</h1>
+
+    @if(session('status'))
+        <div class="alert alert-success">{{ session('status') }}</div>
+    @endif
+
+    <div class="mb-3">
+        <a href="{{ route('admin.products.create') }}" class="btn btn-theme">Create New</a>
+        <a href="{{ route('admin.products.trashed') }}" class="btn btn-secondary">View Trashed</a>
+    </div>
+
+    <form method="GET" class="mb-3 d-flex gap-2">
+        <input type="text" name="search" placeholder="Search" value="{{ request('search') }}" class="form-control">
+        <button type="submit" class="btn btn-primary">Go</button>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Photo</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($products as $p)
+                <tr>
+                    <td>{{ $p->id }}</td>
+                    <td>{{ $p->name }}</td>
+                    <td>
+                        @if($p->photos->first())
+                            <img src="{{ asset('storage/'.$p->photos->first()->file) }}" width="50">
+                        @endif
+                    </td>
+                    <td>{{ $p->price }}</td>
+                    <td>
+                        <a href="{{ route('admin.products.edit',$p) }}" class="btn btn-sm btn-secondary">Edit</a>
+                        <form method="POST" action="{{ route('admin.products.destroy',$p) }}" class="d-inline" onsubmit="return confirm('Delete?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    {{ $products->links() }}
+
+    <h3>Import CSV</h3>
+    <form method="POST" action="{{ route('admin.products.import') }}" enctype="multipart/form-data">
+        @csrf
+        <input type="file" name="file" accept=".csv" class="form-control mb-2">
+        <button type="submit" class="btn btn-theme">Upload</button>
+    </form>
+</div>
+@endsection

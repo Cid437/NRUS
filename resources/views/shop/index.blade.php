@@ -1,38 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>NRUS Shop</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('title', 'Shop')
 
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .product-card {
-            transition: 0.3s;
-        }
-        .product-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-        .price {
-            font-weight: bold;
-            color: #198754;
-        }
-        .navbar {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-    </style>
-</head>
-<body>
+@push('styles')
+<style>
+    .product-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .product-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.6rem 1rem rgba(0,0,0,0.13);
+    }
+    .price {
+        font-weight: 700;
+        color: #198754;
+    }
+</style>
+@endpush
 
-@include('components.navbar')
-
-<div class="container mt-5">
-
+@section('content')
+<div class="container mt-4">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -96,9 +83,9 @@
     <div class="mt-4 d-flex justify-content-center">
         {{ $products->links() }}
     </div>
-
 </div>
+@endsection
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
+@endpush

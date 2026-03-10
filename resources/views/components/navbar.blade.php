@@ -1,96 +1,57 @@
-<nav style="background: #1c1b1b; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ route('shop.index') }}">🛒 NRUS Shop</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <!-- Logo -->
-    <div>
-        <a href="{{ route('shop.index') }}" style="color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;">
-            🛒 NRUS Shop
-        </a>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('shop.index') }}">Products</a></li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                @guest
+                    <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Register</a></li>
+                @endguest
+
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Admin
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminMenu">
+                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.products.index') }}">Products</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.users.index') }}">Users</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.reviews.index') }}">Reviews</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.transactions.index') }}">Transactions</a></li>
+                            </ul>
+                        </li>
+                    @else
+                        <li class="nav-item"><a class="nav-link" href="{{ route('shop.index') }}">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('cart.index') }}">Cart</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('profile.edit') }}">Profile</a></li>
+                    @endif
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ auth()->user()->name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" class="px-3 py-2">
+                                    @csrf
+                                    <button type="submit" class="btn btn-link text-decoration-none text-dark">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @endauth
+            </ul>
+        </div>
     </div>
-
-    <ul style="list-style: none; display: flex; gap: 1.5rem; margin: 0; align-items: center;">
-
-        <!-- Public Links -->
-        <li><a href="/" style="text-decoration: none; color: #ffffff;">Home</a></li>
-        <li><a href="/products" style="text-decoration: none; color: #ffffff;">Products</a></li>
-        <li><a href="/about" style="text-decoration: none; color: #ffffff;">About Us</a></li>
-        <li><a href="/contact" style="text-decoration: none; color: #ffffff;">Contact</a></li>
-
-        @guest
-            <li style="margin-left:auto;">
-                <a href="{{ route('login') }}" style="text-decoration: none; color: #4da6ff; font-weight: bold;">
-                    Login
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('register') }}" style="text-decoration: none; color: #4da6ff; font-weight: bold;">
-                    Register
-                </a>
-            </li>
-        @endguest
-
-        @auth
-
-            <!-- Admin Links -->
-           @if(auth()->user()->role === 'admin')
-
-<li x-data="{ open: false }" style="position: relative;">
-
-    <button 
-        @click="open = !open"
-        style="background:none;border:none;color:white;cursor:pointer;">
-        Admin ▾
-    </button>
-
-    <ul 
-        x-show="open"
-        x-transition
-        @click.outside="open = false"
-        x-cloak
-        style="
-            position:absolute;
-            top:30px;
-            background:#2b2b2b;
-            list-style:none;
-            padding:10px;
-            width:180px;
-        ">
-
-        <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-        <li><a href="{{ route('admin.products.index') }}">Products</a></li>
-        <li><a href="{{ route('admin.users.index') }}">Users</a></li>
-        <li><a href="{{ route('admin.reviews.index') }}">Reviews</a></li>
-        <li><a href="{{ route('admin.transactions.index') }}">Transactions</a></li>
-
-    </ul>
-
-</li>
-
-            @else
-
-                <!-- Normal User Links -->
-                <li><a href="{{ route('shop.index') }}" style="text-decoration: none; color: #ffffff;">Shop</a></li>
-                <li><a href="/cart" style="text-decoration: none; color: #ffffff;">Cart</a></li>
-                <li><a href="{{ route('profile.edit') }}" style="text-decoration: none; color: #ffffff;">Profile</a></li>
-
-            @endif
-
-            <!-- Username -->
-            <li style="margin-left:auto; color: #ffffff;">
-                {{ auth()->user()->name }}
-            </li>
-
-            <!-- Logout -->
-            <li>
-                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                    @csrf
-                    <button type="submit"
-                        style="background: none; border: none; cursor: pointer; font-size: 1rem; color: #ff4d4d;">
-                        Logout
-                    </button>
-                </form>
-            </li>
-
-        @endauth
-
-    </ul>
 </nav>
