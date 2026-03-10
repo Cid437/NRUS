@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head><title>Admin Dashboard</title></head>
-<body>
-@include('components.navbar')
-<h1>Admin Dashboard</h1>
-<p>Welcome, {{ auth()->user()->name }}</p>
+@extends('layouts.app')
 
-<hr>
+@section('title', 'Admin Dashboard')
 
-</body>
-</html>
+@section('content')
+<div class="container mt-5">
+    <h1>Admin Dashboard</h1>
+    <p>Welcome, {{ auth()->user()->name }}</p>
+    <hr>
+</div>
+@endsection

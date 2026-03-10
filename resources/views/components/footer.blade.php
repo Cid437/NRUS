@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 py-3">
-                © {{ date('Y') }} NRUS. Built with Bootstrap 5. Responsive for desktop and mobile.
+                © {{ date('Y') }} NRUS. A project built for academic purposes
             </div>
         </div>
     </div>
