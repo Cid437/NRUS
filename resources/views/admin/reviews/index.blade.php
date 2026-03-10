@@ -43,6 +43,6 @@
         </table>
     </div>
 
-    {{ $reviews->links() }}
+    {{ $products->links('pagination::bootstrap-5') }}
 </div>
 @endsection

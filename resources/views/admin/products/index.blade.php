@@ -54,7 +54,7 @@
         </tbody>
     </table>
 
-    {{ $products->links() }}
+    {{ $products->links('pagination::bootstrap-5') }}
 
     <h3>Import CSV</h3>
     <form method="POST" action="{{ route('admin.products.import') }}" enctype="multipart/form-data">

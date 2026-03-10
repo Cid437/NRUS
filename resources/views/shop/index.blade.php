@@ -2,22 +2,6 @@
 
 @section('title', 'Shop')
 
-@push('styles')
-<style>
-    .product-card {
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    .product-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0.6rem 1rem rgba(0,0,0,0.13);
-    }
-    .price {
-        font-weight: 700;
-        color: #198754;
-    }
-</style>
-@endpush
-
 @section('content')
 <div class="container mt-4">
     @if(session('success'))
@@ -81,7 +65,7 @@
     </div>
 
     <div class="mt-4 d-flex justify-content-center">
-        {{ $products->links() }}
+        {{ $products->links('pagination::bootstrap-5') }}
     </div>
 </div>
 @endsection
