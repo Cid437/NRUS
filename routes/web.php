@@ -139,7 +139,7 @@ Route::middleware(['auth','verified','admin'])
     /*
     | Product Management
     */
-    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
+    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->except(['show']);
 
     Route::get('products/trashed', [\App\Http\Controllers\Admin\ProductController::class,'trashed'])
         ->name('products.trashed');

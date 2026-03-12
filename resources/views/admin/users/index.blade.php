@@ -47,6 +47,6 @@
         </table>
     </div>
 
-    {{ $products->links('pagination::bootstrap-5') }}
+    {{ $users->links('pagination::bootstrap-5') }}
 </div>
 @endsection

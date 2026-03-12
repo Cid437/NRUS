@@ -15,7 +15,7 @@ class ShopController extends Controller
             return view('shop.index', compact('products'));
         }
 
-        $query = Product::query()->where('is_active',true);
+        $query = Product::with('photos')->where('is_active',true);
         if ($request->filled('search')) {
             $term = $request->search;
             if ($request->input('method')==='model') {
