@@ -42,7 +42,22 @@ class Product extends Model
     {
         return $this->hasMany(ProductPhoto::class);
     }
+    
 
+    public function primaryPhoto()
+    {
+        return $this->hasOne(ProductPhoto::class)->where('is_primary', true);
+    }
+
+    public function getPrimaryPhotoUrlAttribute()
+    {
+    if ($this->primaryPhoto && $this->primaryPhoto->file) {
+        return asset('storage/' . $this->primaryPhoto->file);
+    }
+
+       return null;
+    }
+    
     public function reviews()
     {
         return $this->hasMany(Review::class);

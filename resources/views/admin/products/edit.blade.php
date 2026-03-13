@@ -19,6 +19,21 @@
     <form method="POST" action="{{ route('admin.products.update',$product) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
+
+        <div class="mb-3">
+            <label class="form-label">Existing Photos:</label>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach($product->photos as $photo)
+                    <div class="border rounded p-1" style="width:110px; height:110px; overflow:hidden;">
+                        <img src="{{ asset('storage/'.$photo->file) }}" alt="" class="img-fluid" style="max-height:100%; width:100%; object-fit:cover;">
+                        @if($photo->is_primary)
+                            <div class="text-success small">Primary</div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         <div class="mb-3">
             <label class="form-label">Name:</label>
             <input type="text" name="name" value="{{ old('name',$product->name) }}" class="form-control">

@@ -42,6 +42,7 @@ class ProductController extends Controller
             'brand_id'=>'nullable|exists:brands,id',
             'is_active'=>'boolean',
             'photo'=>'nullable|image|max:2048',
+            'photos'=>'nullable|array',
             'photos.*'=>'nullable|image|max:2048',
         ]);
 
@@ -55,10 +56,13 @@ class ProductController extends Controller
             $path = $request->file('photo')->store('products','public');
             ProductPhoto::create(["product_id"=>$product->id,"file"=>$path,"is_primary"=>true]);
         }
-        if ($request->hasFile('photos')) {
+
+        if ($request->hasFile('photos') && is_array($request->file('photos'))) {
             foreach ($request->file('photos') as $file) {
-                $path = $file->store('products','public');
-                ProductPhoto::create(["product_id"=>$product->id,"file"=>$path]);
+                if ($file) {
+                    $path = $file->store('products','public');
+                    ProductPhoto::create(["product_id"=>$product->id,"file"=>$path]);
+                }
             }
         }
 
@@ -82,6 +86,7 @@ class ProductController extends Controller
             'brand_id'=>'nullable|exists:brands,id',
             'is_active'=>'boolean',
             'photo'=>'nullable|image|max:2048',
+            'photos'=>'nullable|array',
             'photos.*'=>'nullable|image|max:2048',
         ]);
 
@@ -92,15 +97,23 @@ class ProductController extends Controller
         $product->update($data);
 
         if ($request->hasFile('photo')) {
-            // remove old primary
-            $product->photos()->where('is_primary',true)->delete();
+            // remove old primary and file from storage
+            $oldPrimary = $product->photos()->where('is_primary',true)->first();
+            if ($oldPrimary) {
+                Storage::disk('public')->delete($oldPrimary->file);
+                $oldPrimary->delete();
+            }
+
             $path = $request->file('photo')->store('products','public');
             ProductPhoto::create(["product_id"=>$product->id,"file"=>$path,"is_primary"=>true]);
         }
-        if ($request->hasFile('photos')) {
+
+        if ($request->hasFile('photos') && is_array($request->file('photos'))) {
             foreach ($request->file('photos') as $file) {
-                $path = $file->store('products','public');
-                ProductPhoto::create(["product_id"=>$product->id,"file"=>$path]);
+                if ($file) {
+                    $path = $file->store('products','public');
+                    ProductPhoto::create(["product_id"=>$product->id,"file"=>$path]);
+                }
             }
         }
 

@@ -44,14 +44,21 @@
         @foreach($products as $product)
             <div class="col-md-4 mb-4">
                 <div class="card product-card h-100">
-                    <div class="card-body text-center">
-                        @if($product->photos->first())
-                            <img src="{{ asset('storage/'.$product->photos->first()->file) }}" alt="{{ $product->name }}" class="img-fluid mb-2" style="max-height:150px; object-fit:contain;">
-                        @else
-                            <div class="border bg-light mb-2" style="height:150px; display:flex;align-items:center;justify-content:center;">No image</div>
+                   <div class="card-body text-center">
+
+                         @if($product->primaryPhoto)
+                             <img src="{{ asset('storage/' . $product->primaryPhoto->file) }}"
+                              alt="{{ $product->name }}"
+                              class="img-fluid mb-2"
+                            style="max-height:150px; object-fit:contain;">
+                         @else
+                           <div class="border bg-light mb-2"
+                               style="height:150px; display:flex;align-items:center;justify-content:center;">
+                               No image
+                            </div>
                         @endif
                         <h5 class="card-title">{{ $product->name }}</h5>
-                        <p class="price">${{ number_format($product->price, 2) }}</p>
+                         <p class="price">${{ number_format($product->price, 2) }}</p>
                     </div>
                     <div class="card-footer bg-white border-0">
                         @auth
