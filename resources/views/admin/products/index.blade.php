@@ -15,52 +15,50 @@
         <a href="{{ route('admin.products.trashed') }}" class="btn btn-secondary">View Trashed</a>
     </div>
 
-    <form method="GET" class="mb-3 d-flex gap-2">
-        <input type="text" name="search" placeholder="Search" value="{{ request('search') }}" class="form-control">
-        <button type="submit" class="btn btn-primary">Go</button>
-    </form>
-
-    <table class="table table-striped">
+    <table id="products-table" class="table table-striped">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Category</th>
+                <th>Brand</th>
                 <th>Photo</th>
                 <th>Price</th>
+                <th>Stock</th>
+                <th>Active</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach($products as $p)
-                <tr>
-                    <td>{{ $p->id }}</td>
-                    <td>{{ $p->name }}</td>
-                    <td>
-                        @if($p->photos->first())
-                            <img src="{{ asset('storage/'.$p->photos->first()->file) }}" width="50">
-                        @endif
-                    </td>
-                    <td>{{ $p->price }}</td>
-                    <td>
-                        <a href="{{ route('admin.products.edit',$p) }}" class="btn btn-sm btn-secondary">Edit</a>
-                        <form method="POST" action="{{ route('admin.products.destroy',$p) }}" class="d-inline" onsubmit="return confirm('Delete?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
     </table>
 
-    {{ $products->links('pagination::bootstrap-5') }}
-
-    <h3>Import CSV</h3>
+    <h3>Import Excel</h3>
     <form method="POST" action="{{ route('admin.products.import') }}" enctype="multipart/form-data">
         @csrf
-        <input type="file" name="file" accept=".csv" class="form-control mb-2">
+        <input type="file" name="file" accept=".xlsx,.xls" class="form-control mb-2">
         <button type="submit" class="btn btn-theme">Upload</button>
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('#products-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route("admin.products.index") }}',
+        columns: [
+            { data: 'id', name: 'id' },
+            { data: 'name', name: 'name' },
+            { data: 'category_name', name: 'category_name' },
+            { data: 'brand_name', name: 'brand_name' },
+            { data: 'primary_photo', name: 'primary_photo', orderable: false },
+            { data: 'price', name: 'price' },
+            { data: 'stock', name: 'stock' },
+            { data: 'is_active', name: 'is_active' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ]
+    });
+});
+</script>
+@endpush

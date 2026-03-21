@@ -21,19 +21,31 @@
 
     <form method="GET" class="row mb-4">
         <div class="col-md-3">
-            <input type="text" name="search" class="form-control" placeholder="Search">
+            <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}">
         </div>
         <div class="col-md-2">
-            <input type="number" name="min_price" class="form-control" placeholder="Min price">
+            <select name="method" class="form-control">
+                <option value="like" {{ request('method') == 'like' ? 'selected' : '' }}>LIKE</option>
+                <option value="model" {{ request('method') == 'model' ? 'selected' : '' }}>Model</option>
+                <option value="scout" {{ request('method') == 'scout' ? 'selected' : '' }}>Scout</option>
+            </select>
         </div>
         <div class="col-md-2">
-            <input type="number" name="max_price" class="form-control" placeholder="Max price">
+            <input type="number" name="min_price" class="form-control" placeholder="Min price" value="{{ request('min_price') }}">
         </div>
         <div class="col-md-2">
-            <input type="number" name="category_id" class="form-control" placeholder="Category ID">
+            <input type="number" name="max_price" class="form-control" placeholder="Max price" value="{{ request('max_price') }}">
         </div>
         <div class="col-md-2">
-            <input type="number" name="brand_id" class="form-control" placeholder="Brand ID">
+            <select name="category_id" class="form-control">
+                <option value="">All Categories</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-1">
+            <input type="number" name="brand_id" class="form-control" placeholder="Brand ID" value="{{ request('brand_id') }}">
         </div>
         <div class="col-md-1">
             <button class="btn btn-primary w-100">Filter</button>
@@ -57,14 +69,13 @@
                                No image
                             </div>
                         @endif
-                        <h5 class="card-title">{{ $product->name }}</h5>
-                         <p class="price">${{ number_format($product->price, 2) }}</p>
+                        <h5 class="card-title"><a href="{{ route('products.show', $product) }}" class="text-decoration-none">{{ $product->name }}</a></h5>
+                         <p class="price">{{ format_currency($product->price) }}</p>
                     </div>
                     <div class="card-footer bg-white border-0">
                         @auth
-                            <form action="{{ route('transactions.store') }}" method="POST">
+                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
                                 @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit" class="btn btn-success w-100">Add to Cart</button>
                             </form>
                         @else

@@ -42,11 +42,11 @@
                 <a href="{{ route('admin.dashboard') }}" class="text-white text-decoration-none fs-5 fw-bold">🛒 NRUS Admin</a>
             </div>
             <nav class="nav flex-column">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link rounded mb-1 @routeIs('admin.dashboard') active @endif">Dashboard</a>
-                <a href="{{ route('admin.products.index') }}" class="nav-link rounded mb-1 @routeIs('admin.products.*') active @endif">Products</a>
-                <a href="{{ route('admin.users.index') }}" class="nav-link rounded mb-1 @routeIs('admin.users.*') active @endif">Users</a>
-                <a href="{{ route('admin.reviews.index') }}" class="nav-link rounded mb-1 @routeIs('admin.reviews.*') active @endif">Reviews</a>
-                <a href="{{ route('admin.transactions.index') }}" class="nav-link rounded mb-1 @routeIs('admin.transactions.*') active @endif">Transactions</a>
+                <a href="{{ route('admin.dashboard') }}" class="nav-link rounded mb-1@if(request()->routeIs('admin.dashboard')) active@endif">Dashboard</a>
+                <a href="{{ route('admin.products.index') }}" class="nav-link rounded mb-1@if(request()->routeIs('admin.products.*')) active@endif">Products</a>
+                <a href="{{ route('admin.users.index') }}" class="nav-link rounded mb-1@if(request()->routeIs('admin.users.*')) active@endif">Users</a>
+                <a href="{{ route('admin.reviews.index') }}" class="nav-link rounded mb-1@if(request()->routeIs('admin.reviews.*')) active@endif">Reviews</a>
+                <a href="{{ route('admin.transactions.index') }}" class="nav-link rounded mb-1@if(request()->routeIs('admin.transactions.*')) active@endif">Transactions</a>
             </nav>
 
             <div class="mt-5 pt-3 border-top border-white-25">

@@ -11,7 +11,7 @@
     @endif
 
     <div class="table-responsive">
-        <table class="table table-bordered table-hover">
+        <table id="reviews-table" class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -22,27 +22,27 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach($reviews as $r)
-                    <tr>
-                        <td>{{ $r->id }}</td>
-                        <td>{{ $r->user->name }}</td>
-                        <td>{{ $r->product->name }}</td>
-                        <td>{{ $r->rating }}</td>
-                        <td>{{ $r->comment }}</td>
-                        <td>
-                            <form method="POST" action="{{ route('admin.reviews.destroy', $r) }}" onsubmit="return confirm('Delete review?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
         </table>
     </div>
-
-    {{ $reviews->links('pagination::bootstrap-5') }}
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('#reviews-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route("admin.reviews.index") }}',
+        columns: [
+            { data: 'id', name: 'id' },
+            { data: 'user_name', name: 'user_name' },
+            { data: 'product_name', name: 'product_name' },
+            { data: 'rating', name: 'rating' },
+            { data: 'comment', name: 'comment' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ]
+    });
+});
+</script>
+@endpush

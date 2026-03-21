@@ -6,13 +6,28 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Yajra\DataTables\DataTables;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::paginate(15);
-        return view('admin.users.index', compact('users'));
+        if ($request->ajax()) {
+            $query = User::query();
+            return DataTables::of($query)
+                ->addColumn('photo', function($user) {
+                    return $user->photo ? '<img src="'.asset('storage/'.$user->photo).'" width="50">' : '';
+                })
+                ->addColumn('status', function($user) {
+                    return $user->is_active ? 'Active' : 'Inactive';
+                })
+                ->addColumn('actions', function($user) {
+                    return view('admin.users.partials.actions', compact('user'))->render();
+                })
+                ->rawColumns(['photo','actions'])
+                ->make(true);
+        }
+        return view('admin.users.index');
     }
 
     public function edit(User $user)

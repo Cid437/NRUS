@@ -42,6 +42,8 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'photo' => $data['photo'] ?? null,
+            'role' => 'user',
+            'is_active' => true,
         ]);
 
         event(new Registered($user));

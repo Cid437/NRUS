@@ -23,7 +23,7 @@
                             <a class="nav-link dropdown-toggle" href="#" id="adminMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Admin
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminMenu">
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminMenu" style="z-index: 1050;">
                                 <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                                 <li><a class="dropdown-item" href="{{ route('admin.products.index') }}">Products</a></li>
                                 <li><a class="dropdown-item" href="{{ route('admin.users.index') }}">Users</a></li>
@@ -32,7 +32,7 @@
                             </ul>
                         </li>
                     @else
-                        <li class="nav-item"><a class="nav-link" href="{{ route('shop.index') }}">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('orders.index') }}">Orders</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('cart.index') }}">Cart</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('profile.edit') }}">Profile</a></li>
                     @endif

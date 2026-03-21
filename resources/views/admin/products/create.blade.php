@@ -35,12 +35,22 @@
             <input type="number" name="stock" value="{{ old('stock') }}" class="form-control">
         </div>
         <div class="mb-3">
-            <label class="form-label">Category ID:</label>
-            <input type="text" name="category_id" value="{{ old('category_id') }}" class="form-control">
+            <label class="form-label">Category:</label>
+            <select name="category_id" class="form-control">
+                <option value="">Select Category</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                @endforeach
+            </select>
         </div>
         <div class="mb-3">
-            <label class="form-label">Brand ID:</label>
-            <input type="text" name="brand_id" value="{{ old('brand_id') }}" class="form-control">
+            <label class="form-label">Brand:</label>
+            <select name="brand_id" class="form-control">
+                <option value="">Select Brand</option>
+                @foreach($brands as $brand)
+                    <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
+                @endforeach
+            </select>
         </div>
         <div class="mb-3">
             <label class="form-label">Primary Photo:</label>

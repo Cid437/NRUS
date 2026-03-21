@@ -31,12 +31,19 @@ class LoginController extends Controller
 
             /** @var \App\Models\User|null $user */
             $user = Auth::user();
+            $intended = $request->session()->get('url.intended');
+
             if ($user && ! $user->hasVerifiedEmail()) {
-                Auth::logout();
-                return redirect()->route('login')->withErrors(['email' => 'You must verify your email address first.']);
+                // If the intended URL is the email verification link, allow user to continue.
+                if ($intended && str_contains($intended, '/email/verify')) {
+                    return redirect()->intended('/');
+                }
+
+                // For manual login, keep user logged in and show verification notice.
+                return redirect()->route('verification.notice')->with('status', 'Please verify your email first.');
             }
 
-            return redirect()->intended('/');
+            return redirect()->intended('/home');
         }
 
         return back()->withErrors([

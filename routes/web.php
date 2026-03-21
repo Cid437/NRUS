@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\VerificationController;
 Route::get('/', [\App\Http\Controllers\ShopController::class,'index'])->name('shop.index');
 
 Route::get('/products', [\App\Http\Controllers\ShopController::class, 'index']);
+Route::get('/products/{product}', [\App\Http\Controllers\ShopController::class, 'show'])->name('products.show');
 
 Route::view('/about', 'about');
 Route::view('/contact', 'contact');
@@ -25,6 +26,9 @@ Route::view('/contact', 'contact');
 */
 
 Route::get('/cart', [\App\Http\Controllers\CartController::class,'index'])->name('cart.index');
+Route::post('/cart/add/{id}', [\App\Http\Controllers\CartController::class,'add'])->name('cart.add');
+Route::post('/cart/update', [\App\Http\Controllers\CartController::class,'update'])->name('cart.update');
+Route::delete('/cart/remove', [\App\Http\Controllers\CartController::class,'remove'])->name('cart.remove');
 
 /*
 |--------------------------------------------------------------------------
@@ -72,9 +76,7 @@ Route::post('email/resend', [VerificationController::class,'resend'])
 |--------------------------------------------------------------------------
 */
 
-Route::get('/home', function () {
-    return view('home');
-})->middleware(['auth','verified'])->name('home');
+Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->middleware(['auth','verified'])->name('home');
 
 
 /*
@@ -83,10 +85,10 @@ Route::get('/home', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('charts/yearly', [\App\Http\Controllers\ChartController::class,'yearlySales']);
-Route::get('charts/monthly', [\App\Http\Controllers\ChartController::class,'monthlySales']);
-Route::get('charts/range', [\App\Http\Controllers\ChartController::class,'rangeBar']);
-Route::get('charts/pie', [\App\Http\Controllers\ChartController::class,'pieProductContribution']);
+Route::get('charts/yearly', [\App\Http\Controllers\ChartController::class,'yearlySales'])->name('charts.yearly');
+Route::get('charts/monthly', [\App\Http\Controllers\ChartController::class,'monthlySales'])->name('charts.monthly');
+Route::get('charts/range', [\App\Http\Controllers\ChartController::class,'rangeBar'])->name('charts.range');
+Route::get('charts/pie', [\App\Http\Controllers\ChartController::class,'pieProductContribution'])->name('charts.pie');
 
 Route::get('charts/view', function(){
     return view('charts.index');
@@ -108,6 +110,9 @@ Route::middleware(['auth','verified'])->group(function(){
 
     // Transactions
     Route::post('transactions', [\App\Http\Controllers\TransactionController::class,'store'])->name('transactions.store');
+
+    // Orders
+    Route::get('orders', [\App\Http\Controllers\OrdersController::class,'index'])->name('orders.index');
 
     // User Profile
     Route::get('profile', [\App\Http\Controllers\ProfileController::class,'edit'])->name('profile.edit');
@@ -162,10 +167,7 @@ Route::middleware(['auth','verified','admin'])
     /*
     | Transaction Management
     */
-    Route::get('transactions', [\App\Http\Controllers\TransactionController::class,'index'])
-        ->name('transactions.index');
-
-    Route::post('transactions/{transaction}/status', [\App\Http\Controllers\TransactionController::class,'updateStatus'])
-        ->name('transactions.updateStatus');
+    Route::resource('transactions', \App\Http\Controllers\Admin\TransactionController::class)->except(['create', 'store', 'show']);
+    Route::post('transactions/{transaction}/update-status', [\App\Http\Controllers\Admin\TransactionController::class, 'updateStatus'])->name('transactions.updateStatus');
 
 });

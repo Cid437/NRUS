@@ -14,39 +14,40 @@
     @endif
 
     <div class="table-responsive">
-        <table class="table table-bordered table-hover">
+        <table id="users-table" class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
-                    <th>Active</th>
+                    <th>Photo</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach($users as $user)
-                    <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>{{ $user->role }}</td>
-                        <td>{{ $user->is_active ? 'Yes' : 'No' }}</td>
-                        <td class="d-flex gap-2">
-                            <a class="btn btn-sm btn-outline-theme" href="{{ route('admin.users.edit', $user) }}">Edit</a>
-                            <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Delete?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
         </table>
     </div>
-
-    {{ $users->links('pagination::bootstrap-5') }}
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('#users-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route("admin.users.index") }}',
+        columns: [
+            { data: 'id', name: 'id' },
+            { data: 'name', name: 'name' },
+            { data: 'email', name: 'email' },
+            { data: 'role', name: 'role' },
+            { data: 'photo', name: 'photo', orderable: false },
+            { data: 'status', name: 'status' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ]
+    });
+});
+</script>
+@endpush

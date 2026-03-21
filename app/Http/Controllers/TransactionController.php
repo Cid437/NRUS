@@ -11,25 +11,32 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Yajra\DataTables\DataTables;
 
 class TransactionController extends Controller
 {
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'items' => 'required|array',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
-        ]);
+        $cart = session()->get('cart', []);
+        if (empty($cart)) {
+            return redirect()->back()->with('error', 'Cart is empty');
+        }
 
         /** @var \App\Models\User|null $authUser */
         $authUser = Auth::user();
-        $transaction = Transaction::create(["user_id"=> $authUser? $authUser->id : null,"total"=>0,"status"=>'completed']);
+        $transaction = Transaction::create(["user_id"=> $authUser? $authUser->id : null,"total"=>0,"status"=>'processing']);
         $total = 0;
-        foreach ($data['items'] as $i) {
-            $total += $i['quantity'] * $i['unit_price'];
-            TransactionItem::create(["transaction_id"=>$transaction->id]+$i);
+        foreach ($cart as $product_id => $item) {
+            $product = \App\Models\Product::find($product_id);
+            if ($product) {
+                $total += $item['quantity'] * $item['price'];
+                TransactionItem::create([
+                    "transaction_id" => $transaction->id,
+                    "product_id" => $product_id,
+                    "quantity" => $item['quantity'],
+                    "unit_price" => $item['price']
+                ]);
+            }
         }
         $transaction->total = $total;
         $transaction->completed_at = now();
@@ -40,6 +47,9 @@ class TransactionController extends Controller
         $transaction->receipt_path = $path;
         $transaction->save();
 
+        // Clear cart
+        session()->forget('cart');
+
         Mail::to($transaction->user->email)->send(new TransactionCompleted($transaction));
 
         return redirect()->back()->with('status','Transaction completed and email sent');
@@ -47,14 +57,28 @@ class TransactionController extends Controller
 
     public function index()
     {
-        $transactions = Transaction::with('user')->paginate(20);
-        return view('admin.transactions.index', compact('transactions'));
+        if (request()->ajax()) {
+            $transactions = Transaction::with('user');
+            return DataTables::of($transactions)
+                ->addColumn('user_name', function($transaction) {
+                    return $transaction->user->name;
+                })
+                ->addColumn('actions', function($transaction) {
+                    return view('admin.transactions.partials.actions', compact('transaction'))->render();
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+        return view('admin.transactions.index');
     }
 
     public function updateStatus(Request $request, Transaction $transaction)
     {
         $data = $request->validate(['status'=>'required|string']);
         $transaction->status = $data['status'];
+        if ($data['status'] === 'completed') {
+            $transaction->completed_at = now();
+        }
         $transaction->save();
         Mail::to($transaction->user->email)->send(new TransactionStatusUpdated($transaction));
         return redirect()->back()->with('status','Status updated and email sent');

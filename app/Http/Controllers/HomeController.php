@@ -6,14 +6,14 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
-class ShopController extends Controller
+class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('photos', 'category')->where('is_active', true);
+        $query = Product::with('photos', 'category', 'brand')->where('is_active', true);
 
         if ($request->filled('search')) {
-            $products = Product::search($request->search)->where('is_active', true)->with('category')->paginate(12);
+            $products = Product::search($request->search)->where('is_active', true)->with('category', 'brand')->take(12)->get();
         } else {
             if ($request->filled('min_price')) {
                 $query->where('price', '>=', $request->min_price);
@@ -27,19 +27,11 @@ class ShopController extends Controller
             if ($request->filled('brand_id')) {
                 $query->where('brand_id', $request->brand_id);
             }
-            $products = $query->paginate(12);
+            $products = $query->latest()->take(12)->get();
         }
 
         $categories = Category::all();
 
-        return view('shop.index', compact('products', 'categories'));
-    }
-
-    public function show(Product $product)
-    {
-        if (!$product->is_active) {
-            abort(404);
-        }
-        return view('shop.show', compact('product'));
+        return view('home', compact('products', 'categories'));
     }
 }

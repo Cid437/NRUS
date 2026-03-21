@@ -6,6 +6,7 @@ use App\Models\Review;
 use App\Models\TransactionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\DataTables;
 
 class ReviewController extends Controller
 {
@@ -57,8 +58,22 @@ class ReviewController extends Controller
 
     public function index()
     {
-        $reviews = Review::with('user','product')->paginate(20);
-        return view('admin.reviews.index', compact('reviews'));
+        if (request()->ajax()) {
+            $reviews = Review::with('user','product');
+            return DataTables::of($reviews)
+                ->addColumn('user_name', function($review) {
+                    return optional($review->user)->name ?? 'Deleted User';
+                })
+                ->addColumn('product_name', function($review) {
+                    return optional($review->product)->name ?? 'Deleted Product';
+                })
+                ->addColumn('actions', function($review) {
+                    return view('admin.reviews.partials.actions', compact('review'))->render();
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+        return view('admin.reviews.index');
     }
 
     public function destroy(Review $review)

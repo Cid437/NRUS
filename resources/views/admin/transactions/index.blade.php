@@ -11,7 +11,7 @@
     @endif
 
     <div class="table-responsive">
-        <table class="table table-bordered table-hover">
+        <table id="transactions-table" class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -21,26 +21,26 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach($transactions as $t)
-                    <tr>
-                        <td>{{ $t->id }}</td>
-                        <td>{{ $t->user->name }}</td>
-                        <td>{{ $t->total }}</td>
-                        <td>{{ $t->status }}</td>
-                        <td>
-                            <form method="POST" action="{{ route('admin.transactions.updateStatus', $t) }}" class="d-flex gap-2">
-                                @csrf
-                                <input class="form-control form-control-sm" style="width: 120px;" type="text" name="status" value="{{ $t->status }}" required>
-                                <button class="btn btn-sm btn-theme" type="submit">Update</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
         </table>
     </div>
-
-    {{ $transactions->links('pagination::bootstrap-5') }}
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('#transactions-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route("admin.transactions.index") }}',
+        columns: [
+            { data: 'id', name: 'id' },
+            { data: 'user_name', name: 'user_name' },
+            { data: 'total', name: 'total' },
+            { data: 'status', name: 'status' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ]
+    });
+});
+</script>
+@endpush

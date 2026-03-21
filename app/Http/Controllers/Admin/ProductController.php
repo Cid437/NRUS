@@ -2,32 +2,54 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Brand;
 use App\Models\Product;
 use App\Models\ProductPhoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Yajra\DataTables\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ProductsImport;
 
-class ProductController extends Controller
+class ProductController extends \App\Http\Controllers\Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('category','brand');
-        if ($request->filled('search')) {
-            $s = $request->search;
-            $query->where('name','like','%'.$s.'%');
+        if ($request->ajax()) {
+            $query = Product::with('category','brand','primaryPhoto');
+            if ($request->input('search.value')) {
+                $s = $request->input('search.value');
+                $query->where('name','like','%'.$s.'%');
+            }
+            if ($request->filled('status')) {
+                $query->where('is_active',$request->status);
+            }
+            return DataTables::of($query)
+                ->addColumn('category_name', function($product) {
+                    return $product->category ? $product->category->name : '';
+                })
+                ->addColumn('brand_name', function($product) {
+                    return $product->brand ? $product->brand->name : '';
+                })
+                ->addColumn('primary_photo', function($product) {
+                    return $product->primaryPhoto ? '<img src="'.asset('storage/'.$product->primaryPhoto->file).'" width="50">' : '';
+                })
+                ->addColumn('actions', function($product) {
+                    return view('admin.products.partials.actions', compact('product'))->render();
+                })
+                ->rawColumns(['primary_photo','actions'])
+                ->make(true);
         }
-        if ($request->filled('status')) {
-            $query->where('is_active',$request->status);
-        }
-        $products = $query->paginate(15);
-        return view('admin.products.index', compact('products'));
+        return view('admin.products.index');
     }
 
     public function create()
     {
-        return view('admin.products.create');
+        $categories = Category::all();
+        $brands = Brand::all();
+        return view('admin.products.create', compact('categories', 'brands'));
     }
 
     public function store(Request $request)
@@ -71,7 +93,9 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        return view('admin.products.edit', compact('product'));
+        $categories = Category::all();
+        $brands = Brand::all();
+        return view('admin.products.edit', compact('product', 'categories', 'brands'));
     }
 
     public function update(Request $request, Product $product)
@@ -141,23 +165,8 @@ class ProductController extends Controller
 
     public function import(Request $request)
     {
-        $request->validate(['file'=>'required|file']);
-        $path = $request->file('file')->getRealPath();
-        // simple csv import
-        if (($handle = fopen($path,'r')) !== false) {
-            $header = fgetcsv($handle,1000,',');
-            while (($row = fgetcsv($handle,1000,',')) !== false) {
-                $data = array_combine($header,$row);
-                Product::updateOrCreate(['slug'=>$data['slug'] ?? Str::slug($data['name'])], [
-                    'name'=>$data['name'],
-                    'description'=>$data['description'] ?? null,
-                    'price'=>$data['price'] ?? 0,
-                    'stock'=>$data['stock'] ?? 0,
-                    'is_active'=>$data['is_active'] ?? 1,
-                ]);
-            }
-            fclose($handle);
-        }
+        $request->validate(['file'=>'required|file|mimes:xlsx,xls']);
+        Excel::import(new ProductsImport, $request->file('file'));
         return redirect()->route('admin.products.index')->with('status','Import completed');
     }
 }

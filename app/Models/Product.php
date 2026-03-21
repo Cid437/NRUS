@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 
 /**
  * @property int $id
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     protected $fillable = [
         'category_id', 'brand_id', 'name', 'slug', 'description', 'price', 'stock', 'is_active', 'category'
@@ -66,5 +67,13 @@ class Product extends Model
     public function scopeSearch($query, $term)
     {
         return $query->where('name', 'like', '%'.$term.'%');
+    }
+
+    public function toSearchableArray()
+    {
+        return [
+            'name' => $this->name,
+            'description' => $this->description,
+        ];
     }
 }

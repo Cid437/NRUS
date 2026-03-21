@@ -31,7 +31,7 @@
             @foreach($products as $product)
                 <tr>
                     <td>{{ $product->name }}</td>
-                    <td>{{ number_format($product->price, 2) }}</td>
+                    <td>{{ format_currency($product->price) }}</td>
                     <td>{{ $product->category ?? '-' }}</td>
                     <td>
                         <a href="{{ route('products.edit', $product) }}" class="btn btn-sm btn-secondary">Edit</a>
