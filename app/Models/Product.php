@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Scout\Searchable;
 
 /**
  * @property int $id
@@ -23,7 +22,7 @@ use Laravel\Scout\Searchable;
  */
 class Product extends Model
 {
-    use HasFactory, SoftDeletes, Searchable;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'category_id', 'brand_id', 'name', 'slug', 'description', 'price', 'stock', 'is_active', 'category'
@@ -76,4 +75,10 @@ class Product extends Model
             'description' => $this->description,
         ];
     }
+
+    public function getFormattedPriceAttribute()
+    {
+        return '₱' . number_format($this->price, 2);
+    }
+
 }

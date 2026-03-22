@@ -69,7 +69,7 @@
                                 <h5 class="card-title">{{ Str::limit($product->name, 50) }}</h5>
                                 <p class="text-muted small">{{ $product->category?->name ?? 'Uncategorized' }}</p>
                                 <p class="card-text flex-grow-1">{{ Str::limit($product->description, 100) }}</p>
-                                <p class="h5 text-primary mb-3">{{ format_currency($product->price) }}</p>
+                                <p class="h5 text-primary mb-3">{{ $product->formatted_price }}</p>
                                 <div class="d-grid gap-2">
                                     <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-outline-primary">View Details</a>
                                     <form action="{{ route('cart.add', $product->id) }}" method="POST" class="w-100">

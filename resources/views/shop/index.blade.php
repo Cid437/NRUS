@@ -70,7 +70,7 @@
                             </div>
                         @endif
                         <h5 class="card-title"><a href="{{ route('products.show', $product) }}" class="text-decoration-none">{{ $product->name }}</a></h5>
-                         <p class="price">{{ format_currency($product->price) }}</p>
+                         <p class="h5 text-primary mb-3">{{ $product->formatted_price }}</p>
                     </div>
                     <div class="card-footer bg-white border-0">
                         @auth
