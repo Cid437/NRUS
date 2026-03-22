@@ -26,6 +26,7 @@ Route::view('/contact', 'contact');
 */
 
 Route::get('/cart', [\App\Http\Controllers\CartController::class,'index'])->name('cart.index');
+Route::get('/cart', [\App\Http\Controllers\CartController::class,'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [\App\Http\Controllers\CartController::class,'add'])->name('cart.add');
 Route::post('/cart/update', [\App\Http\Controllers\CartController::class,'update'])->name('cart.update');
 Route::delete('/cart/remove', [\App\Http\Controllers\CartController::class,'remove'])->name('cart.remove');

@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Brand;
-use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ShopController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['photos', 'category', 'brand'])->where('is_active', true);
+        $query = Product::with(['category', 'brand'])->where('is_active', true);
 
         if ($request->filled('search')) {
-            $searchValue = $request->search;
-            $query->where('name', 'like', '%'.$searchValue.'%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         if ($request->filled('min_price')) {
@@ -34,14 +32,9 @@ class ShopController extends Controller
             $query->where('brand_id', $request->brand_id);
         }
 
-        if ($request->filled('type')) {
-            // 'type' is optional legacy field; placeholder for service/product type
-            $query->where('category', $request->type);
-        }
-
         $products = $query->paginate(12);
-        $categories = Category::all();
-        $brands = Brand::all();
+        $categories = DB::table('categories')->get();
+        $brands = DB::table('brands')->get();
 
         $types = ['product' => 'Product', 'service' => 'Service'];
 
@@ -50,7 +43,7 @@ class ShopController extends Controller
 
     public function show(Product $product)
     {
-        $product = Product::with(['category:id,name', 'brand:id,name'])->findOrFail($product->id);
+        $product = Product::with(['category', 'brand'])->findOrFail($product->id);
         if (!$product->is_active) {
             abort(404);
         }

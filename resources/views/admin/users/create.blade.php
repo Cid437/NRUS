@@ -21,27 +21,27 @@
 
         <div class="mb-3">
             <label class="form-label">Name:</label>
-            <input class="form-control" type="text" name="name" value="{{ old('name') }}" required>
+            <input class="form-control" type="text" name="name" value="{{ old('name') }}">
         </div>
 
         <div class="mb-3">
             <label class="form-label">Email:</label>
-            <input class="form-control" type="email" name="email" value="{{ old('email') }}" required>
+            <input class="form-control" type="email" name="email" value="{{ old('email') }}">
         </div>
 
         <div class="mb-3">
             <label class="form-label">Password:</label>
-            <input class="form-control" type="password" name="password" required>
+            <input class="form-control" type="password" name="password">
         </div>
 
         <div class="mb-3">
             <label class="form-label">Confirm Password:</label>
-            <input class="form-control" type="password" name="password_confirmation" required>
+            <input class="form-control" type="password" name="password_confirmation">
         </div>
 
         <div class="mb-3">
             <label class="form-label">Role:</label>
-            <select class="form-select" name="role" required>
+            <select class="form-select" name="role">
                 <option value="">Select Role</option>
                 <option value="admin" {{ old('role')=='admin' ? 'selected' : '' }}>Admin</option>
                 <option value="user" {{ old('role')=='user' ? 'selected' : '' }}>User</option>

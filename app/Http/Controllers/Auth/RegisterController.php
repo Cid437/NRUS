@@ -20,36 +20,45 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        $data = $request->all();
-        $validator = Validator::make($data, [
-            'name' => ['required','string','max:255'],
-            'email' => ['required','string','email','max:255','unique:users'],
-            'password' => ['required','string','min:8','confirmed'],
-            'photo' => ['nullable','image','max:2048'],
-        ]);
+        $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('user_photos','public');
-            $data['photo'] = $path;
-        }
-
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'photo' => $data['photo'] ?? null,
-            'role' => 'user',
-            'is_active' => true,
-        ]);
+        $user = $this->create($request->all());
 
         event(new Registered($user));
 
         Auth::login($user);
 
         return redirect()->route('verification.notice');
+    }
+
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'photo' => ['nullable', 'image', 'max:2048'],
+        ]);
+    }
+
+    protected function create(array $data)
+    {
+        $photo = null;
+        if (isset($data['photo']) && $data['photo']) {
+            $photo = Storage::putFileAs('public/user_photos', $data['photo'], $data['photo']->hashName());
+        }
+
+        return User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'photo' => $photo,
+            'role' => 'user',
+            'is_active' => true,
+        ]);
     }
 }

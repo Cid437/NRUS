@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 
 class UserController extends Controller
@@ -37,13 +38,19 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,'.$user->id,
             'role' => 'required|in:admin,user,guest',
             'is_active' => 'boolean',
-            'password' => 'nullable|string|min:6', // password is optional
+            'password' => 'nullable|string|min:6',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $validator->validated();
 
         // Handle active checkbox unchecked as 0 (boolean from input value)
         $data['is_active'] = $request->boolean('is_active') ? 1 : 0;
@@ -72,15 +79,20 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users',
             'role' => 'required|in:admin,user,guest',
             'is_active' => 'boolean',
-            'password' => 'required|string|min:6|confirmed', // password is required and must be confirmed
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $data['password'] = Hash::make($data['password']); // hash the password
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $validator->validated();
+        $data['password'] = Hash::make($data['password']);
 
         User::create($data);
         return redirect()->route('admin.users.index')->with('status','User created');

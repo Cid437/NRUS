@@ -39,30 +39,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
-        ];
-    }
-
     public function reviews()
     {
         return $this->hasMany(Review::class);
@@ -77,4 +53,8 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->role === 'admin';
     }
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }

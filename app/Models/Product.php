@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 
 /**
  * @property int $id
@@ -20,7 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
  */
-class Product extends Model
+class Product extends Model implements Searchable
 {
     use HasFactory, SoftDeletes;
 
@@ -49,36 +51,20 @@ class Product extends Model
         return $this->hasOne(ProductPhoto::class)->where('is_primary', true);
     }
 
-    public function getPrimaryPhotoUrlAttribute()
-    {
-    if ($this->primaryPhoto && $this->primaryPhoto->file) {
-        return asset('storage/' . $this->primaryPhoto->file);
-    }
-
-       return null;
-    }
-    
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
 
-    public function scopeSearch($query, $term)
+    public function getSearchResult(): SearchResult
     {
-        return $query->where('name', 'like', '%'.$term.'%');
-    }
+        $url = route('shop.show', $this->slug);
 
-    public function toSearchableArray()
-    {
-        return [
-            'name' => $this->name,
-            'description' => $this->description,
-        ];
-    }
-
-    public function getFormattedPriceAttribute()
-    {
-        return '₱' . number_format($this->price, 2);
+        return new SearchResult(
+            $this,
+            $this->name,
+            $url
+        );
     }
 
 }

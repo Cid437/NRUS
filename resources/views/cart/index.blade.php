@@ -20,7 +20,7 @@
         </div>
     @endif
 
-    @if(count($cart) > 0)
+    @if(!empty($cart))
         <div class="row">
             <div class="col-md-8">
                 <div class="card">

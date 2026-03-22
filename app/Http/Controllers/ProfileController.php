@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
@@ -18,17 +20,22 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        $data = $request->validate([
-            'name'=>'required|string|max:255',
-            'email'=>'required|email|max:255|unique:users,email,'.$user->id,
-            'photo'=>'nullable|image|max:2048',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,'.$user->id,
+            'photo' => 'nullable|image|max:2048',
         ]);
-        if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('user_photos','public');
-            $data['photo'] = $path;
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
-        /** @var \App\Models\User $user */
-        $user->update($data);
+
+        $data = $request->only(['name', 'email']);
+        if ($request->hasFile('photo')) {
+            $data['photo'] = Storage::putFileAs('public/user_photos', $request->file('photo'), $request->file('photo')->hashName());
+        }
+
+        DB::table('users')->where('id', $user->id)->update($data);
         return back()->with('status','Profile updated');
     }
 }

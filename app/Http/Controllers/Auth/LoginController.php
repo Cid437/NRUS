@@ -17,7 +17,7 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => ['required','email'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
@@ -25,27 +25,18 @@ class LoginController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $credentials = $request->only('email','password');
+        $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
 
-            /** @var \App\Models\User|null $user */
             $user = Auth::user();
 
-            if ($user && $user->is_active === false) {
+            if ($user && !$user->is_active) {
                 Auth::logout();
                 return back()->withErrors(['email' => 'Your account has been deactivated.'])->withInput();
             }
 
-            $intended = $request->session()->get('url.intended');
-
-            if ($user && ! $user->hasVerifiedEmail()) {
-                // If the intended URL is the email verification link, allow user to continue.
-                if ($intended && str_contains($intended, '/email/verify')) {
-                    return redirect()->intended('/');
-                }
-
-                // For manual login, keep user logged in and show verification notice.
+            if ($user && !$user->hasVerifiedEmail()) {
                 return redirect()->route('verification.notice')->with('status', 'Please verify your email first.');
             }
 

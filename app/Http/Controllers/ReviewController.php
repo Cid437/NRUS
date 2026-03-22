@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
-use App\Models\TransactionItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
 
@@ -12,24 +13,32 @@ class ReviewController extends Controller
 {
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'product_id'=>'required|exists:products,id',
-            'rating'=>'required|integer|min:1|max:5',
-            'comment'=>'nullable|string',
+        $validator = \Validator::make($request->all(), [
+            'product_id' => 'required|exists:products,id',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string',
         ]);
 
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->only(['product_id', 'rating', 'comment']);
+
         // check purchase
-        $bought = TransactionItem::where('product_id',$data['product_id'])
-            ->whereHas('transaction', function($q){
-                $q->where('user_id', Auth::id())->where('status','completed');
-            })->exists();
+        $bought = DB::table('transaction_items')
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->where('transaction_items.product_id', $data['product_id'])
+            ->where('transactions.user_id', Auth::id())
+            ->where('transactions.status', 'completed')
+            ->exists();
         if (! $bought) {
             return back()->withErrors(['product_id'=>'You have not purchased this product']);
         }
 
-        $review = Review::updateOrCreate(
-            ['user_id'=>Auth::id(), 'product_id'=>$data['product_id']],
-            ['rating'=>$data['rating'],'comment'=>$data['comment']]
+        DB::table('reviews')->updateOrInsert(
+            ['user_id' => Auth::id(), 'product_id' => $data['product_id']],
+            ['rating' => $data['rating'], 'comment' => $data['comment'], 'updated_at' => now()]
         );
 
         return back()->with('status','Review saved');
@@ -48,11 +57,18 @@ class ReviewController extends Controller
         if (Auth::id() !== $review->user_id) {
             abort(403);
         }
-        $data = $request->validate([
-            'rating'=>'required|integer|min:1|max:5',
-            'comment'=>'nullable|string',
+
+        $validator = Validator::make($request->all(), [
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string',
         ]);
-        $review->update($data);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->only(['rating', 'comment']);
+        DB::table('reviews')->where('id', $review->id)->update($data);
         return redirect()->back()->with('status','Review updated');
     }
 

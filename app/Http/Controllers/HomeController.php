@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Brand;
-use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['photos','category','brand'])->where('is_active', true);
+        $query = Product::with(['category', 'brand'])->where('is_active', true);
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%'.$request->search.'%');
@@ -33,14 +32,10 @@ class HomeController extends Controller
             $query->where('brand_id', $request->brand_id);
         }
 
-        if ($request->filled('type')) {
-            $query->where('category', $request->type);
-        }
-
         $products = $query->latest()->take(12)->get();
 
-        $categories = Category::all();
-        $brands = Brand::all();
+        $categories = DB::table('categories')->get();
+        $brands = DB::table('brands')->get();
         $types = ['product' => 'Product', 'service' => 'Service'];
 
         return view('home', compact('products', 'categories', 'brands', 'types'));
