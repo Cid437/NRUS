@@ -16,13 +16,6 @@
                     <input type="text" name="search" class="form-control form-control-lg" placeholder="Search products" value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">
-                    <select name="method" class="form-select form-select-lg">
-                        <option value="like" {{ request('method') == 'like' ? 'selected' : '' }}>LIKE</option>
-                        <option value="model" {{ request('method') == 'model' ? 'selected' : '' }}>Model</option>
-                        <option value="scout" {{ request('method') == 'scout' ? 'selected' : '' }}>Scout</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
                     <input type="number" name="min_price" class="form-control form-control-lg" placeholder="Min price" value="{{ request('min_price') }}">
                 </div>
                 <div class="col-md-2">
@@ -36,11 +29,16 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-1">
-                    <input type="number" name="brand_id" class="form-control form-control-lg" placeholder="Brand ID" value="{{ request('brand_id') }}">
+                <div class="col-md-2">
+                    <select name="brand_id" class="form-select form-select-lg">
+                        <option value="">All Brands</option>
+                        @foreach($brands as $brand)
+                            <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-1">
-                    <button type="submit" class="btn btn-primary btn-lg w-100">Filter</button>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Search</button>
                 </div>
             </form>
         </div>

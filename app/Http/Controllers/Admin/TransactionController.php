@@ -53,9 +53,19 @@ class TransactionController extends Controller
     public function updateStatus(Request $request, Transaction $transaction)
     {
         $data = $request->validate(['status'=>'required|string']);
+        $oldStatus = $transaction->status;
         $transaction->status = $data['status'];
         if ($data['status'] === 'completed') {
             $transaction->completed_at = now();
+            // Deduct stock only if status was not already completed
+            if ($oldStatus !== 'completed') {
+                $transaction->load('items.product');
+                foreach ($transaction->items as $item) {
+                    if ($item->product) {
+                        $item->product->decrement('stock', $item->quantity);
+                    }
+                }
+            }
         }
         $transaction->save();
         Mail::to($transaction->user->email)->send(new TransactionStatusUpdated($transaction));

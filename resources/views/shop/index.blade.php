@@ -19,22 +19,15 @@
 
     <h2 class="mb-4 text-center">Products</h2>
 
-    <form method="GET" class="row mb-4">
+    <form method="GET" class="row gx-2 gy-2 mb-4">
         <div class="col-md-3">
             <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}">
         </div>
         <div class="col-md-2">
-            <select name="method" class="form-control">
-                <option value="like" {{ request('method') == 'like' ? 'selected' : '' }}>LIKE</option>
-                <option value="model" {{ request('method') == 'model' ? 'selected' : '' }}>Model</option>
-                <option value="scout" {{ request('method') == 'scout' ? 'selected' : '' }}>Scout</option>
-            </select>
+            <input type="number" step="0.01" min="0" name="min_price" class="form-control" placeholder="Min price" value="{{ request('min_price') }}">
         </div>
         <div class="col-md-2">
-            <input type="number" name="min_price" class="form-control" placeholder="Min price" value="{{ request('min_price') }}">
-        </div>
-        <div class="col-md-2">
-            <input type="number" name="max_price" class="form-control" placeholder="Max price" value="{{ request('max_price') }}">
+            <input type="number" step="0.01" min="0" name="max_price" class="form-control" placeholder="Max price" value="{{ request('max_price') }}">
         </div>
         <div class="col-md-2">
             <select name="category_id" class="form-control">
@@ -44,11 +37,16 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-md-1">
-            <input type="number" name="brand_id" class="form-control" placeholder="Brand ID" value="{{ request('brand_id') }}">
+        <div class="col-md-2">
+            <select name="brand_id" class="form-control">
+                <option value="">All Brands</option>
+                @foreach($brands as $brand)
+                    <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
+                @endforeach
+            </select>
         </div>
         <div class="col-md-1">
-            <button class="btn btn-primary w-100">Filter</button>
+            <button class="btn btn-primary w-100">Search</button>
         </div>
     </form>
 

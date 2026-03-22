@@ -31,6 +31,12 @@ class LoginController extends Controller
 
             /** @var \App\Models\User|null $user */
             $user = Auth::user();
+
+            if ($user && $user->is_active === false) {
+                Auth::logout();
+                return back()->withErrors(['email' => 'Your account has been deactivated.'])->withInput();
+            }
+
             $intended = $request->session()->get('url.intended');
 
             if ($user && ! $user->hasVerifiedEmail()) {

@@ -45,9 +45,14 @@ class UserController extends Controller
             'password' => 'nullable|string|min:6', // password is optional
         ]);
 
+        // Handle active checkbox unchecked as 0 (boolean from input value)
+        $data['is_active'] = $request->boolean('is_active') ? 1 : 0;
+
         // Only update password if admin entered one
-         if ($request->filled('password')) {
-        $user->password = $request->password; // Laravel automatically hashes if $casts['password'] = 'hashed'
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        } else {
+            unset($data['password']);
         }
 
         $user->update($data);

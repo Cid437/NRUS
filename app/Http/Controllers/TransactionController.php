@@ -40,7 +40,11 @@ class TransactionController extends Controller
         }
         $transaction->total = $total;
         $transaction->completed_at = now();
-        // generate simple pdf receipt
+
+        // make sure nested relations are loaded for PDF generation and email
+        $transaction->load(['user', 'items.product.brand', 'items.product.category']);
+
+        // generate pdf receipt from proper blade table
         $pdf = PDF::loadView('pdf.receipt', compact('transaction'));
         $path = 'receipts/txn_'.$transaction->id.'.pdf';
         Storage::disk('public')->put($path, $pdf->output());

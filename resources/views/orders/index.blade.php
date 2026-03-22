@@ -33,17 +33,24 @@
                                     </thead>
                                     <tbody>
                                         @foreach($transaction->items as $item)
+                                            @php
+                                                $product = $item->product;
+                                                $review = $product ? $product->reviews()->where('user_id', auth()->id())->first() : null;
+                                            @endphp
                                             <tr>
-                                                <td>{{ $item->product->name }}</td>
+                                                <td>{{ optional($product)->name ?? 'Product removed' }}</td>
                                                 <td>{{ $item->quantity }}</td>
                                                 <td>{{ format_currency($item->unit_price) }}</td>
                                                 <td>{{ format_currency($item->quantity * $item->unit_price) }}</td>
                                                 <td>
-                                                    @php $review = $item->product->reviews()->where('user_id', auth()->id())->first(); @endphp
-                                                    @if($review)
-                                                        <a href="{{ route('reviews.edit', $review) }}" class="btn btn-sm btn-outline-primary">Edit Review</a>
+                                                    @if($product)
+                                                        @if($review)
+                                                            <a href="{{ route('reviews.edit', $review) }}" class="btn btn-sm btn-outline-primary">Edit Review</a>
+                                                        @else
+                                                            <a href="{{ route('products.show', $product) }}#review" class="btn btn-sm btn-primary">Leave Review</a>
+                                                        @endif
                                                     @else
-                                                        <a href="{{ route('products.show', $item->product) }}#review" class="btn btn-sm btn-primary">Leave Review</a>
+                                                        <span class="text-muted">Unavailable</span>
                                                     @endif
                                                 </td>
                                             </tr>

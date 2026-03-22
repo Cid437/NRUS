@@ -9,7 +9,10 @@ class OrdersController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $transactions = $user->transactions()->with('items.product')->orderBy('created_at', 'desc')->paginate(10);
+        $transactions = $user->transactions()
+            ->with(['items.product.brand', 'items.product.category'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
         return view('orders.index', compact('transactions'));
     }
 }

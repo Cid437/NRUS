@@ -18,7 +18,7 @@ class ProductController extends \App\Http\Controllers\Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = Product::with('category','brand','primaryPhoto');
+            $query = Product::with(['category:id,name','brand:id,name','primaryPhoto']);
             if ($request->input('search.value')) {
                 $s = $request->input('search.value');
                 $query->where('name','like','%'.$s.'%');
@@ -26,12 +26,29 @@ class ProductController extends \App\Http\Controllers\Controller
             if ($request->filled('status')) {
                 $query->where('is_active',$request->status);
             }
+
             return DataTables::of($query)
                 ->addColumn('category_name', function($product) {
-                    return $product->category ? $product->category->name : '';
+                    $catRelation = null;
+                    if ($product->relationLoaded('category')) {
+                        $catRelation = $product->getRelation('category');
+                    } else {
+                        $catRelation = $product->category()->first();
+                    }
+
+                    if ($catRelation) {
+                        return $catRelation->name;
+                    }
+
+                    $rawCategory = $product->getAttribute('category');
+                    if (is_string($rawCategory) && trim($rawCategory) !== '') {
+                        return $rawCategory;
+                    }
+
+                    return 'N/A';
                 })
                 ->addColumn('brand_name', function($product) {
-                    return $product->brand ? $product->brand->name : '';
+                    return optional($product->brand)->name ?? 'N/A';
                 })
                 ->addColumn('primary_photo', function($product) {
                     return $product->primaryPhoto ? '<img src="'.asset('storage/'.$product->primaryPhoto->file).'" width="50">' : '';

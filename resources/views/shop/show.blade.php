@@ -34,7 +34,7 @@
             <h1>{{ $product->name }}</h1>
             <p class="h4 text-primary">{{ format_currency($product->price) }}</p>
             <p><strong>Stock:</strong> {{ $product->stock }}</p>
-            <p><strong>Category:</strong> {{ $product->category ? $product->category->name : 'N/A' }}</p>
+            <p><strong>Category:</strong> {{ $product->category->name ?? 'No Category' }}</p>
             <p><strong>Brand:</strong> {{ $product->brand ? $product->brand->name : 'N/A' }}</p>
             <p><strong>Description:</strong></p>
             <p>{{ $product->description ?? 'No description available.' }}</p>
